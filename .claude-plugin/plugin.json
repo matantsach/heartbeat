@@ -6,6 +6,11 @@
     "name": "Matan Tsach"
   },
   "license": "MIT",
-  "keywords": ["watchdog", "monitoring", "loop-detection", "agent-health"],
+  "keywords": [
+    "watchdog",
+    "monitoring",
+    "loop-detection",
+    "agent-health"
+  ],
   "hooks": "./hooks/hooks.json"
 }
