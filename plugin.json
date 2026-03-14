@@ -4,5 +4,5 @@
   "description": "Watchdog plugin that detects stuck, looping, or stalled agents and nudges them back on track.",
   "author": "Matan Tsach",
   "license": "MIT",
-  "hooks": "./hooks/hooks.json"
+  "hooks": "./hooks.json"
 }
