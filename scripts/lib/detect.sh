@@ -9,6 +9,7 @@ is_allowlisted() {
   for pattern in $HB_ALLOWLIST; do
     pattern="$(echo "$pattern" | tr -d ' ')"
     # Support wildcards: "Bash:*" matches any Bash command
+    # shellcheck disable=SC2053
     if [[ "$fingerprint" == $pattern ]]; then
       return 0
     fi
