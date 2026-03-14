@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/matantsach/heartbeat/compare/v0.2.1...v0.2.2) (2026-03-14)
+
+
+### Bug Fixes
+
+* point plugin.json hooks at Copilot-compatible hooks.json ([#8](https://github.com/matantsach/heartbeat/issues/8)) ([d349acd](https://github.com/matantsach/heartbeat/commit/d349acd2e3c67cba0d1f21ce062af14c89c0e73a))
+
 ## [0.2.1](https://github.com/matantsach/heartbeat/compare/v0.2.0...v0.2.1) (2026-03-14)
 
 
