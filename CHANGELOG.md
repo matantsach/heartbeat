@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.2.0](https://github.com/matantsach/heartbeat/compare/v0.1.0...v0.2.0) (2026-03-14)
+
+
+### Features
+
+* fix stall timer persistence + content-aware fingerprinting ([2e9eccf](https://github.com/matantsach/heartbeat/commit/2e9eccf35291e56f7d4b3d98b019a596d9fee2cc))
+* fix stall timer persistence and add content-aware fingerprinting ([31fd4b6](https://github.com/matantsach/heartbeat/commit/31fd4b6949de101b3995c2295a300ab76a566c74))
+
+
+### Bug Fixes
+
+* add shellcheck disable for intentional glob matching in allowlist ([8583721](https://github.com/matantsach/heartbeat/commit/8583721029f8e015d63a8844f0936d96c0d6ddf0))
+
+
+### CI
+
+* add CI/CD pipeline with release-please automation ([99b557d](https://github.com/matantsach/heartbeat/commit/99b557dda5eac004dea222c9a1b2a9643f330c9d))
+
 ## [0.1.0] - 2026-03-14
 
 ### Added
