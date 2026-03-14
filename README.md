@@ -10,12 +10,12 @@ Works with **Claude Code** and **GitHub Copilot CLI**.
 
 **Claude Code:**
 ```bash
-claude plugin install heartbeat
+claude plugin install matantsach/heartbeat
 ```
 
 **GitHub Copilot CLI:**
 ```bash
-/ plugin install heartbeat
+copilot plugin install matantsach/heartbeat
 ```
 
 That's it. No config file needed. Heartbeat starts watching immediately.
