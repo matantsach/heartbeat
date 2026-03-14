@@ -1,0 +1,8 @@
+{
+  "name": "grep-spiral",
+  "display_name": "Grep Spiral",
+  "description": "Agent searches for the same pattern repeatedly with minor variations",
+  "tools": ["Grep", "Search"],
+  "nudge": "You've searched for similar patterns {threshold}+ times. The file or pattern may not exist. Try listing directory contents or reading files directly.",
+  "severity": "medium"
+}

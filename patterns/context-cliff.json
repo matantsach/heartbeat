@@ -1,0 +1,8 @@
+{
+  "name": "context-cliff",
+  "display_name": "Context Cliff",
+  "description": "Estimated context window usage has exceeded safe threshold, risking degraded agent performance",
+  "tools": ["*"],
+  "nudge": "Estimated context usage has exceeded {context_pct}%. Consider running /compact to free context space before continuing.",
+  "severity": "warning"
+}

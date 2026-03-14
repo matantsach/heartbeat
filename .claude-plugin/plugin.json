@@ -1,0 +1,11 @@
+{
+  "name": "heartbeat",
+  "version": "0.1.0",
+  "description": "Watchdog plugin that detects stuck, looping, or stalled agents and nudges them back on track.",
+  "author": {
+    "name": "Matan Tsach"
+  },
+  "license": "MIT",
+  "keywords": ["watchdog", "monitoring", "loop-detection", "agent-health"],
+  "hooks": "./hooks/hooks.json"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "edit-undo-cycle",
+  "display_name": "Edit-Undo Cycle",
+  "description": "Agent repeatedly edits the same file with similar changes, unable to make progress",
+  "tools": ["Edit", "Write"],
+  "nudge": "You've edited '{target}' {threshold}+ times with similar changes. Step back and try a fundamentally different approach — the current strategy isn't working.",
+  "severity": "high"
+}

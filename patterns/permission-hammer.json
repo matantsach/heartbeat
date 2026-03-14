@@ -1,0 +1,8 @@
+{
+  "name": "permission-hammer",
+  "display_name": "Permission Hammer",
+  "description": "Agent retries the same failing command without diagnosing the root cause",
+  "tools": ["Bash"],
+  "nudge": "You've retried the same failing command {threshold}+ times. The root cause may be a missing dependency, wrong path, or permission issue. Diagnose before retrying.",
+  "severity": "high"
+}

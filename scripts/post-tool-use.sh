@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# post-tool-use.sh — PostToolUse hook: update state, run detection, set flags
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/lib/config.sh"
+source "$SCRIPT_DIR/lib/state.sh"
+source "$SCRIPT_DIR/lib/detect.sh"
+source "$SCRIPT_DIR/lib/log.sh"
+source "$SCRIPT_DIR/lib/notify.sh"
+
+INPUT="$(cat)"
+
+TOOL_NAME="$(echo "$INPUT" | jq -r '.tool_name // "unknown"')"
+TOOL_INPUT="$(echo "$INPUT" | jq -r '.tool_input // {}')"
+TOOL_OUTPUT="$(echo "$INPUT" | jq -r '.tool_output // ""')"
+
+TARGET="$(echo "$TOOL_INPUT" | jq -r '.file_path // .path // .command // .pattern // "unknown"' 2>/dev/null || echo "unknown")"
+OUTPUT_BYTES="$(echo -n "$TOOL_OUTPUT" | wc -c | tr -d ' ')"
+
+if [[ ! -f "$HB_STATE_DIR/state.json" ]]; then
+  exit 0
+fi
+
+reset_errors
+append_tool_call "$TOOL_NAME" "$TARGET" "$OUTPUT_BYTES"
+touch "$HB_STATE_DIR/.last_activity"
+
+LOOP_RESULT="$(detect_loop)"
+if [[ "$LOOP_RESULT" != "none" ]]; then
+  NUDGE_MSG="$(get_nudge_message "$LOOP_RESULT")"
+  set_intervention "$LOOP_RESULT" "$NUDGE_MSG"
+  log_incident "$LOOP_RESULT" "flag_set" "$NUDGE_MSG"
+  exit 0
+fi
+
+CTX_RESULT="$(detect_context_pressure)"
+if [[ "$CTX_RESULT" != "none" ]]; then
+  NUDGE_MSG="$(get_nudge_message "$CTX_RESULT")"
+  set_intervention "$CTX_RESULT" "$NUDGE_MSG"
+  log_incident "$CTX_RESULT" "flag_set" "$NUDGE_MSG"
+  exit 0
+fi
+
+exit 0

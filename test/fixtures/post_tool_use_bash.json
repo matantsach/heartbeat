@@ -1,0 +1,10 @@
+{
+  "session_id": "test-session-001",
+  "cwd": "/tmp/test-project",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Bash",
+  "tool_input": {
+    "command": "npm test"
+  },
+  "tool_output": "1 test failed\nExpected 2 but got 1"
+}

@@ -1,0 +1,8 @@
+{
+  "name": "error-cascade",
+  "display_name": "Error Cascade",
+  "description": "Multiple consecutive tool calls fail, indicating a systemic issue",
+  "tools": ["*"],
+  "nudge": "{threshold} consecutive tool calls have failed. Stop and diagnose the root cause before continuing.",
+  "severity": "critical"
+}

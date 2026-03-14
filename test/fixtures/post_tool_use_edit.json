@@ -1,0 +1,12 @@
+{
+  "session_id": "test-session-001",
+  "cwd": "/tmp/test-project",
+  "hook_event_name": "PostToolUse",
+  "tool_name": "Edit",
+  "tool_input": {
+    "file_path": "/tmp/test-project/src/auth.ts",
+    "old_string": "const x = 1",
+    "new_string": "const x = 2"
+  },
+  "tool_output": "File edited successfully"
+}
