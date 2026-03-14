@@ -1,0 +1,55 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: Release Please
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+
+  validate:
+    name: Validate Release
+    needs: release-please
+    if: needs.release-please.outputs.release_created
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Run test suite
+        run: ./test/run-tests.sh
+
+      - name: Validate plugin manifests
+        run: |
+          jq empty .claude-plugin/plugin.json
+          jq empty plugin.json
+          jq empty hooks/hooks.json
+
+      - name: Verify version matches tag
+        run: |
+          TAG="${{ needs.release-please.outputs.tag_name }}"
+          VERSION="${TAG#v}"
+          CC_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
+          COP_VERSION=$(jq -r '.version' plugin.json)
+          if [[ "$CC_VERSION" != "$VERSION" ]]; then
+            echo "::error::.claude-plugin/plugin.json version ($CC_VERSION) doesn't match tag ($VERSION)"
+            exit 1
+          fi
+          if [[ "$COP_VERSION" != "$VERSION" ]]; then
+            echo "::error::plugin.json version ($COP_VERSION) doesn't match tag ($VERSION)"
+            exit 1
+          fi

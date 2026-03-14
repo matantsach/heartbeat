@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check shell scripts with shellcheck
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: scripts
+          severity: warning
+
+  test:
+    name: Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install jq
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y jq
+
+      - name: Verify jq is available
+        run: jq --version
+
+      - name: Run test suite
+        run: ./test/run-tests.sh
+
+  validate-plugin:
+    name: Validate Plugin
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate Claude Code plugin manifest
+        run: |
+          jq empty .claude-plugin/plugin.json || {
+            echo "::error::.claude-plugin/plugin.json is not valid JSON"
+            exit 1
+          }
+          # Check required fields
+          jq -e '.name' .claude-plugin/plugin.json > /dev/null
+          jq -e '.version' .claude-plugin/plugin.json > /dev/null
+          jq -e '.hooks' .claude-plugin/plugin.json > /dev/null
+
+      - name: Validate Copilot CLI plugin manifest
+        run: |
+          jq empty plugin.json || {
+            echo "::error::plugin.json is not valid JSON"
+            exit 1
+          }
+          jq -e '.name' plugin.json > /dev/null
+          jq -e '.version' plugin.json > /dev/null
+          jq -e '.hooks' plugin.json > /dev/null
+
+      - name: Validate hooks registration
+        run: |
+          jq empty hooks/hooks.json || {
+            echo "::error::hooks/hooks.json is not valid JSON"
+            exit 1
+          }
+
+      - name: Validate pattern files
+        run: |
+          for f in patterns/*.json; do
+            jq empty "$f" || {
+              echo "::error::$f is not valid JSON"
+              exit 1
+            }
+            jq -e '.name' "$f" > /dev/null
+            jq -e '.nudge' "$f" > /dev/null
+          done
+
+      - name: Verify all hook scripts are executable
+        run: |
+          for script in scripts/*.sh; do
+            if [[ ! -x "$script" ]]; then
+              echo "::error::$script is not executable"
+              exit 1
+            fi
+          done
+
+      - name: Verify version consistency
+        run: |
+          CC_VERSION=$(jq -r '.version' .claude-plugin/plugin.json)
+          COP_VERSION=$(jq -r '.version' plugin.json)
+          if [[ "$CC_VERSION" != "$COP_VERSION" ]]; then
+            echo "::error::Version mismatch: .claude-plugin/plugin.json ($CC_VERSION) != plugin.json ($COP_VERSION)"
+            exit 1
+          fi
