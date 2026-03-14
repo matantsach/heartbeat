@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.1](https://github.com/matantsach/heartbeat/compare/v0.2.0...v0.2.1) (2026-03-14)
+
+
+### Bug Fixes
+
+* Copilot CLI plugin compatibility ([#6](https://github.com/matantsach/heartbeat/issues/6)) ([736706f](https://github.com/matantsach/heartbeat/commit/736706f56a50fb8d65ef4b0e7e4c17f5830490c6))
+* make hooks work natively in Copilot CLI ([#7](https://github.com/matantsach/heartbeat/issues/7)) ([c7ebf2f](https://github.com/matantsach/heartbeat/commit/c7ebf2f1de90ffeaf91647445d3b237ab825416f))
+
+
+### Miscellaneous
+
+* add open source community files ([#4](https://github.com/matantsach/heartbeat/issues/4)) ([e86ea8b](https://github.com/matantsach/heartbeat/commit/e86ea8bf593f676703f6176501774d8059641d26))
+
 ## [0.2.0](https://github.com/matantsach/heartbeat/compare/v0.1.0...v0.2.0) (2026-03-14)
 
 
