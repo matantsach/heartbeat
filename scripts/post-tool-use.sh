@@ -11,9 +11,16 @@ source "$SCRIPT_DIR/lib/notify.sh"
 
 INPUT="$(cat)"
 
-TOOL_NAME="$(echo "$INPUT" | jq -r '.tool_name // "unknown"')"
-TOOL_INPUT="$(echo "$INPUT" | jq -r '.tool_input // {}')"
-TOOL_OUTPUT="$(echo "$INPUT" | jq -r '.tool_output // ""')"
+# Change to project directory (Copilot CLI runs hooks from plugin install dir)
+INPUT_CWD="$(echo "$INPUT" | jq -r '.cwd // empty')"
+if [[ -n "$INPUT_CWD" && -d "$INPUT_CWD" ]]; then
+  cd "$INPUT_CWD"
+fi
+
+# Support both Claude Code (snake_case) and Copilot CLI (camelCase) field names
+TOOL_NAME="$(echo "$INPUT" | jq -r '.tool_name // .toolName // "unknown"')"
+TOOL_INPUT="$(echo "$INPUT" | jq -r '.tool_input // .toolArgs // {}')"
+TOOL_OUTPUT="$(echo "$INPUT" | jq -r '.tool_output // .toolResult // ""')"
 
 TARGET="$(echo "$TOOL_INPUT" | jq -r '.file_path // .path // .command // .pattern // "unknown"' 2>/dev/null || echo "unknown")"
 OUTPUT_BYTES="$(echo -n "$TOOL_OUTPUT" | wc -c | tr -d ' ')"

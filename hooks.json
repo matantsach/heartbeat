@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "command": "${PLUGIN_ROOT}/scripts/session-start.sh"
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "command": "${PLUGIN_ROOT}/scripts/post-tool-use.sh"
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "command": "${PLUGIN_ROOT}/scripts/pre-tool-use.sh"
+      }
+    ],
+    "errorOccurred": [
+      {
+        "type": "command",
+        "command": "${PLUGIN_ROOT}/scripts/post-tool-use-failure.sh"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "command": "${PLUGIN_ROOT}/scripts/session-end.sh"
+      }
+    ],
+    "subagentStop": [
+      {
+        "type": "command",
+        "command": "${PLUGIN_ROOT}/scripts/session-end.sh"
+      }
+    ]
+  }
+}

@@ -7,8 +7,15 @@ source "$SCRIPT_DIR/lib/config.sh"
 source "$SCRIPT_DIR/lib/state.sh"
 
 INPUT="$(cat)"
-SESSION_ID="$(echo "$INPUT" | jq -r '.session_id // "unknown"')"
+# Support both Claude Code (snake_case) and Copilot CLI (camelCase) field names
+SESSION_ID="$(echo "$INPUT" | jq -r '.session_id // .sessionId // "unknown"')"
 SOURCE="$(echo "$INPUT" | jq -r '.source // "startup"')"
+
+# Change to project directory (Copilot CLI runs hooks from plugin install dir)
+INPUT_CWD="$(echo "$INPUT" | jq -r '.cwd // empty')"
+if [[ -n "$INPUT_CWD" && -d "$INPUT_CWD" ]]; then
+  cd "$INPUT_CWD"
+fi
 
 FIRST_RUN=0
 if [[ ! -d "$HB_STATE_DIR" ]]; then
@@ -26,13 +33,14 @@ if [[ -n "$TOMBSTONE" ]]; then
   echo "Heartbeat: Previous session died from '$TOMB_PATTERN'. Avoid repeating: $TOMB_MSG" >&2
 fi
 
-if [[ "$FIRST_RUN" -eq 1 && "$SOURCE" == "startup" ]]; then
+# Copilot CLI sends "new", Claude Code sends "startup"
+if [[ "$FIRST_RUN" -eq 1 && ("$SOURCE" == "startup" || "$SOURCE" == "new") ]]; then
   echo "Heartbeat installed. Watching for stuck agents (loops, stalls, error spirals, context pressure)." >&2
   echo "Detection test: simulated Edit-Undo Cycle caught in <1s. You're protected." >&2
   echo "Config: HEARTBEAT_LOOP_THRESHOLD=$HB_LOOP_THRESHOLD | HEARTBEAT_STALL_TIMEOUT=${HB_STALL_TIMEOUT}s | HEARTBEAT_ERROR_THRESHOLD=$HB_ERROR_THRESHOLD" >&2
 fi
 
-if [[ "$SOURCE" == "startup" || "$SOURCE" == "resume" ]]; then
+if [[ "$SOURCE" == "startup" || "$SOURCE" == "new" || "$SOURCE" == "resume" ]]; then
   # Kill orphaned timer from previous session
   if [[ -f "$HB_STATE_DIR/.timer_pid" ]]; then
     old_pid="$(cat "$HB_STATE_DIR/.timer_pid" 2>/dev/null || true)"

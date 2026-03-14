@@ -9,7 +9,13 @@ source "$SCRIPT_DIR/lib/detect.sh"
 source "$SCRIPT_DIR/lib/log.sh"
 source "$SCRIPT_DIR/lib/notify.sh"
 
-cat > /dev/null
+INPUT="$(cat)"
+
+# Change to project directory (Copilot CLI runs hooks from plugin install dir)
+INPUT_CWD="$(echo "$INPUT" | jq -r '.cwd // empty')"
+if [[ -n "$INPUT_CWD" && -d "$INPUT_CWD" ]]; then
+  cd "$INPUT_CWD"
+fi
 
 if [[ ! -f "$HB_STATE_DIR/state.json" ]]; then
   exit 0
