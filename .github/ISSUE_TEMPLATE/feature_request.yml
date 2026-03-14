@@ -1,0 +1,44 @@
+name: Feature Request
+description: Suggest a new feature or detection pattern
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for the idea! We especially welcome new detection pattern proposals.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What problem does this solve? What agent behavior triggers it?
+      placeholder: "When an agent keeps rebuilding Docker images without changing the Dockerfile..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How should Heartbeat handle this?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Type
+      options:
+        - New detection pattern
+        - Improvement to existing pattern
+        - Configuration / settings
+        - Platform support
+        - Integration (webhook, CI, etc.)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any workarounds or alternative approaches you've tried?

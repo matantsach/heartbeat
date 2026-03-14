@@ -1,0 +1,72 @@
+name: Bug Report
+description: Report a bug in Heartbeat
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting a bug! Please fill out the sections below.
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Which AI coding agent are you using?
+      options:
+        - Claude Code
+        - Copilot CLI
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly.
+      placeholder: "Heartbeat kept sending stall notifications after my session ended..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Minimal steps to reproduce the issue.
+      placeholder: |
+        1. Install Heartbeat
+        2. Start a session
+        3. ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: config
+    attributes:
+      label: Configuration
+      description: Relevant env vars, .heartbeat.yml, or custom patterns.
+      render: yaml
+
+  - type: input
+    id: version
+    attributes:
+      label: Heartbeat version
+      description: Run `jq .version plugin.json` or check .claude-plugin/plugin.json.
+      placeholder: "0.2.0"
+    validations:
+      required: true
+
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "macOS 14.2 / Ubuntu 24.04"
+    validations:
+      required: true
