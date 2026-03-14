@@ -15,8 +15,7 @@ echo '{"session_id":"test-ss-001","hook_event_name":"SessionStart","source":"sta
 assert_file_exists "$HB_STATE_DIR/state.json" "state file created"
 assert_json_field "$HB_STATE_DIR/state.json" ".session_id" "test-ss-001" "session id set"
 # Kill stall timer
-pid="$(jq -r '.stall_timer_pid // empty' "$HB_STATE_DIR/state.json")"
-[[ -n "$pid" ]] && kill "$pid" 2>/dev/null || true
+[[ -f "$HB_STATE_DIR/.timer_pid" ]] && kill "$(cat "$HB_STATE_DIR/.timer_pid")" 2>/dev/null || true
 
 run_test "first-run shows demo message"
 rm -rf "$HB_STATE_DIR"
@@ -24,12 +23,19 @@ output="$(echo '{"session_id":"test-ss-002","hook_event_name":"SessionStart","so
 assert_contains "$output" "Heartbeat" "shows heartbeat name"
 assert_contains "$output" "installed" "shows install message"
 # Kill stall timer
-pid="$(jq -r '.stall_timer_pid // empty' "$HB_STATE_DIR/state.json" 2>/dev/null)"
-[[ -n "$pid" ]] && kill "$pid" 2>/dev/null || true
+[[ -f "$HB_STATE_DIR/.timer_pid" ]] && kill "$(cat "$HB_STATE_DIR/.timer_pid")" 2>/dev/null || true
 
 run_test "re-initializes on compact source"
 echo '{"session_id":"test-ss-003","hook_event_name":"SessionStart","source":"compact","cwd":"/tmp/test"}' | bash "$HOOK" 2>/dev/null
 assert_file_exists "$HB_STATE_DIR/state.json" "state still exists after compact"
+
+run_test "stall timer creates sentinel and PID file"
+rm -rf "$HB_STATE_DIR"
+echo '{"session_id":"test-ss-sentinel","source":"startup"}' | bash "$HOOK" 2>/dev/null
+assert_file_exists "$HB_STATE_DIR/.alive" "sentinel file created"
+assert_file_exists "$HB_STATE_DIR/.timer_pid" "timer PID file created"
+# Cleanup
+[[ -f "$HB_STATE_DIR/.timer_pid" ]] && kill "$(cat "$HB_STATE_DIR/.timer_pid")" 2>/dev/null || true
 
 teardown_test_env
 print_summary
