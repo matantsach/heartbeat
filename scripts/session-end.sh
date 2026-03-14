@@ -12,10 +12,17 @@ if [[ ! -f "$HB_STATE_DIR/state.json" ]]; then
   exit 0
 fi
 
-TIMER_PID="$(get_state_field '.stall_timer_pid')"
-if [[ -n "$TIMER_PID" && "$TIMER_PID" != "null" ]]; then
-  kill "$TIMER_PID" 2>/dev/null || true
+# Kill stall timer via PID file
+if [[ -f "$HB_STATE_DIR/.timer_pid" ]]; then
+  TIMER_PID="$(cat "$HB_STATE_DIR/.timer_pid" 2>/dev/null || true)"
+  if [[ -n "$TIMER_PID" ]]; then
+    kill "$TIMER_PID" 2>/dev/null || true
+  fi
+  rm -f "$HB_STATE_DIR/.timer_pid"
 fi
+# Remove sentinel — timer loop will exit on next iteration if kill missed
+rm -f "$HB_STATE_DIR/.alive"
+rm -f "$HB_STATE_DIR/.stall_notified"
 
 TOTAL_CALLS="$(get_state_field '.total_tool_calls')"
 INTERVENTIONS="$(get_state_field '.intervention_count')"

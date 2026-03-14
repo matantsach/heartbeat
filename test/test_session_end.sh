@@ -37,5 +37,23 @@ output="$(echo '{"session_id":"test-end-002","hook_event_name":"Stop"}' | bash "
 assert_contains "$output" "47 tool calls" "shows total"
 assert_contains "$output" "2 interventions" "shows intervention count"
 
+run_test "session-end removes sentinel and PID file"
+init_state "test-end-sentinel"
+touch "$HB_STATE_DIR/.alive"
+echo "99999" > "$HB_STATE_DIR/.timer_pid"
+echo '{"hook_event_name":"Stop"}' | bash "$HOOK" 2>&1 >/dev/null
+if [[ ! -f "$HB_STATE_DIR/.alive" ]]; then
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+else
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+  echo "  FAIL: sentinel file should be removed"
+fi
+if [[ ! -f "$HB_STATE_DIR/.timer_pid" ]]; then
+  TESTS_PASSED=$((TESTS_PASSED + 1))
+else
+  TESTS_FAILED=$((TESTS_FAILED + 1))
+  echo "  FAIL: timer PID file should be removed"
+fi
+
 teardown_test_env
 print_summary

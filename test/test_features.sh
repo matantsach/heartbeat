@@ -384,8 +384,7 @@ assert_contains "$output" "Previous session died" "session-start shows tombstone
 assert_contains "$output" "permission-hammer" "tombstone pattern shown"
 
 # Kill stall timer
-pid="$(jq -r '.stall_timer_pid // empty' "$HB_STATE_DIR/state.json" 2>/dev/null || true)"
-[[ -n "$pid" ]] && kill "$pid" 2>/dev/null || true
+[[ -f "$HB_STATE_DIR/.timer_pid" ]] && kill "$(cat "$HB_STATE_DIR/.timer_pid")" 2>/dev/null || true
 teardown_test_env
 
 run_test "pre-tool-use writes tombstone when max_nudges exceeded"

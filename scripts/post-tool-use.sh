@@ -18,13 +18,26 @@ TOOL_OUTPUT="$(echo "$INPUT" | jq -r '.tool_output // ""')"
 TARGET="$(echo "$TOOL_INPUT" | jq -r '.file_path // .path // .command // .pattern // "unknown"' 2>/dev/null || echo "unknown")"
 OUTPUT_BYTES="$(echo -n "$TOOL_OUTPUT" | wc -c | tr -d ' ')"
 
+# Compute content hash for smarter fingerprinting
+CONTENT_HASH=""
+case "$TOOL_NAME" in
+  Edit)
+    # Hash file_path + old_string — same region = same intent
+    hash_input="$(echo "$TOOL_INPUT" | jq -r '(.file_path // "") + (.old_string // "")' 2>/dev/null || true)"
+    if [[ -n "$hash_input" ]]; then
+      CONTENT_HASH="$(printf '%s' "$hash_input" | cksum | cut -d' ' -f1)"
+    fi
+    ;;
+esac
+
 if [[ ! -f "$HB_STATE_DIR/state.json" ]]; then
   exit 0
 fi
 
 reset_errors
-append_tool_call "$TOOL_NAME" "$TARGET" "$OUTPUT_BYTES"
+append_tool_call "$TOOL_NAME" "$TARGET" "$OUTPUT_BYTES" "$CONTENT_HASH"
 touch "$HB_STATE_DIR/.last_activity"
+rm -f "$HB_STATE_DIR/.stall_notified"
 
 LOOP_RESULT="$(detect_loop)"
 if [[ "$LOOP_RESULT" != "none" ]]; then

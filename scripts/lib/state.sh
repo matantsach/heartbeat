@@ -18,19 +18,21 @@ init_state() {
   "consecutive_errors": 0,
   "total_output_bytes": 0,
   "intervention": null,
-  "intervention_count": 0,
-  "stall_timer_pid": null
+  "intervention_count": 0
 }
 EOF
 }
 
 append_tool_call() {
-  local tool="$1" target="$2" output_bytes="${3:-0}"
+  local tool="$1" target="$2" output_bytes="${3:-0}" content_hash="${4:-}"
   local state_file
   state_file="$(_state_file)"
   local ts
   ts="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   local fingerprint="${tool}:${target}"
+  if [[ -n "$content_hash" ]]; then
+    fingerprint="${fingerprint}:${content_hash}"
+  fi
 
   jq --arg tool "$tool" \
      --arg target "$target" \
@@ -82,14 +84,6 @@ increment_intervention_count() {
 get_state_field() {
   local field="$1"
   jq -r "$field" "$(_state_file)"
-}
-
-update_stall_timer_pid() {
-  local pid="$1"
-  local state_file
-  state_file="$(_state_file)"
-  jq --arg pid "$pid" '.stall_timer_pid = ($pid | tonumber)' \
-     "$state_file" > "${state_file}.tmp" && mv "${state_file}.tmp" "$state_file"
 }
 
 write_tombstone() {
